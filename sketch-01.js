@@ -1,8 +1,8 @@
 const canvasSketch = require('canvas-sketch');
-const random = require('canvas-sketch-util/random')
+const random = require('canvas-sketch-util/random');
 
 const settings = {
-  dimensions: [ 1080, 1080 ]
+  dimensions: [ 1080, 1080 ],
 };
 
 
@@ -12,7 +12,7 @@ const sketch = () => {
     context.fillStyle = 'black';
     context.strokeStyle = 'white';
     context.fillRect(0, 0, width, height);
-    context.lineWidth = Math.random() * width * 0.02
+    context.lineWidth = Math.random() * width * 0.02;
 
     const w   = width  * 0.10;
     const h   = height * 0.10;
@@ -33,14 +33,14 @@ const sketch = () => {
           context.arc(x, y, 50, 0, 2 * Math.PI);
           context.stroke();
           
-          if (Math.random() > 0.5) {
+          if (Math.random() > 0.7) {
           context.beginPath();
           context.strokeStyle = 'darkred';
           context.arc(x, y, 25, 0, 2 * Math.PI);
           context.stroke(); 
         }
       }
-    }  
+    }   
   };
 };
 

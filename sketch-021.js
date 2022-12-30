@@ -7,11 +7,11 @@ const settings = {
   dimensions: [ 1080, 1080 ],
   playbackRate: 'throttle',
   animate: true,
-  fps: 10
+  fps: 5,
 };
 
 const params = {
-  num: 125,
+  num: 1,
   radius: 0.3,
   range: 1,
   range2: 0.9,
@@ -87,7 +87,7 @@ const sketch = () => {
       context.lineCap = params.lineCap;
 
       const arcGradient = context.createLinearGradient(0, 0, 50, 170);
-            arcGradient.addColorStop(0, "black")
+            arcGradient.addColorStop(0, "white")
             arcGradient.addColorStop(1, "#45C4B0")
       context.strokeStyle =  arcGradient;
       // forma del arco

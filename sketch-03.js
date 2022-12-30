@@ -4,13 +4,13 @@ const math = require('canvas-sketch-util/math')
 
 const settings = {
   dimensions: [ 1080, 1080 ],
-  animate: true
+  animate: true,
 };
 
 const sketch = ({ context, width, height }) => {
   const agents = [];
 
-  for (let i = 0; i < 90; i++) {
+  for (let i = 0; i < 80; i++) {
     const x = random.range(0, width);
     const y = random.range(0, height);
 
@@ -19,7 +19,7 @@ const sketch = ({ context, width, height }) => {
 
 
   return ({ context, width, height }) => {
-    context.fillStyle = 'white';
+    context.fillStyle = 'black';
     context.fillRect(0, 0, width, height);
 
     for (let i = 0; i < agents.length; i++) {
@@ -30,11 +30,18 @@ const sketch = ({ context, width, height }) => {
 
         const dist = agent.pos.getDistance(other.pos);
 
+        let myGradient = context.createRadialGradient(540, 540, 540, 540, 540, 90);
+        myGradient.addColorStop(1, "white");
+        myGradient.addColorStop(0.9, "#7EF28F");
+        myGradient.addColorStop(0.4, "#150259");
+        myGradient.addColorStop(0.3, "#0F0240");
+        myGradient.addColorStop(0.1, "#090126");
+
         if (dist > 200) continue;
 
-        context.lineWidth = math.mapRange(dist, 0, 20, 5, 4);
-
-        context.strokeStyle = "black"
+        context.lineWidth = math.mapRange(dist, 0, 200, 1, 5);
+        context.lineCap = 'round';
+        context.strokeStyle = myGradient;
         context.beginPath();
         context.moveTo(agent.pos.x, agent.pos.y);
         context.lineTo(other.pos.x, other.pos.y);
@@ -68,8 +75,9 @@ class Vector {
 class Agent {
   constructor(x, y) {
     this.pos = new Vector(x, y);
-    this.vel = new Vector(random.range(-1, 5), random.range(-1, 10));
-    this.radius = random.range(4, 30);
+    this.vel = new Vector(random.range(-1, 5), random.range(-1, 5));
+    // circle size
+    this.radius = random.range(1, 5);
   }
 
   bounce(width, height) {
@@ -86,8 +94,9 @@ class Agent {
     context.save();
     context.translate(this.pos.x, this.pos.y)
     
-    context.lineWidth = 4;
-    context.strokeStyle = "black";
+    context.lineWidth = 0;
+    context.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+    context.fillStyle = 'rgba(255, 255, 255, 0.1)';
 
     context.beginPath();
     context.arc(0, 0, this.radius, 0, Math.PI * 2);

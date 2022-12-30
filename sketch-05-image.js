@@ -15,7 +15,7 @@ const typeCanvas = document.createElement('canvas');
 const typeContext = typeCanvas.getContext('2d');
 
 const sketch = ({ context, width, height }) => {
-  const cell = 7;
+  const cell = 10;
   const cols = Math.floor(width  / cell);
   const rows = Math.floor(height / cell);
   const numCells = cols * rows;
@@ -33,7 +33,7 @@ const sketch = ({ context, width, height }) => {
 
     const typeData = typeContext.getImageData(0, 0, cols, rows).data;
 
-    context.fillStyle = 'black';
+    context.fillStyle = '#0D0000';
     context.fillRect(0, 0, width, height);
 
     context.textBaseline = 'middle';
@@ -54,10 +54,10 @@ const sketch = ({ context, width, height }) => {
 
       const glyph = getGlyph(r);
 
-      context.font = `${cell * 2}px ${fontFamily}`;
-      if (Math.random() < 0.1) context.font = `${cell * 6}px ${fontFamily}`;
+      context.font = `${cell * 1}px ${fontFamily}`;
+      if (Math.random() < 0.09) context.font = `${cell * 3.5}px ${fontFamily}`;
 
-      context.fillStyle = 'white';
+      context.fillStyle = '#D9BF71';
 
       context.save();
       context.translate(x, y);
@@ -65,31 +65,38 @@ const sketch = ({ context, width, height }) => {
 
       // context.fillRect(0, 0, cell, cell);
 
-      context.fillText(glyph, 0, 0);
+      context.fillText(glyph, 0, 80);
       
       context.restore();
     }
+
+    //Extra circle
+    // context.beginPath();
+    // context.strokeStyle = 'black';
+    // context.lineWidth = 250;
+    // context.arc(540, 540, 750, 0, 2 * Math.PI);
+    // context.stroke();
     
-    context.drawImage(typeCanvas, 0, 0);
+    //context.drawImage(typeCanvas, 0, 0);
   };
 };
 
 const getGlyph = (v) => {
   if (v < 50) return '';
-  if (v < 100) return 's';
-  if (v < 150) return 'e';
-  if (v < 200) return 'x';
+  if (v < 100) return 'axe';
+  if (v < 150) return 'kill';
+  if (v < 200) return 'death';
 
-  const glyphs = '/, ]['.split('');
+  const glyphs = '=+ ]['.split('');
 
   return random.pick(glyphs);
 };
 
 
-const onKeyUp = (e) => {
+//const onKeyUp = (e) => {
   // text = e.key.toUpperCase();
   // manager.render();
-};
+//};
 
 // document.addEventListener('keyup', onKeyUp);
 
@@ -103,7 +110,7 @@ const loadMeSomeImage = (url) => {
 };
 
 const start = async () => {
-  const url = './12342.jpg';
+  const url = './axe1.jpg';
   image = await loadMeSomeImage(url);
   manager = await canvasSketch(sketch, settings);
 };
