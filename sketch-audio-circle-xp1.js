@@ -1,6 +1,7 @@
 const canvasSketch = require('canvas-sketch');
 const math = require('canvas-sketch-util/math');
 const random = require('canvas-sketch-util/random');
+const eases = require('eases');
 
 const settings = {
   dimensions: [ 1080, 1080 ],
@@ -13,14 +14,16 @@ let manager;
 let minDb, maxDb;
 
 const sketch = () => {
-  const numCircles = 3;
-  const numSlices = 50;
+  const numCircles = 16;
+  const numSlices = 3;
   const slice = Math.PI * 2 / numSlices;
+  const radius = 50;
 
   const bins = [];
+  const lineWidths = [];
   const rotationOffsets = [];
   
-  let bin, mapped, phi; 
+  let lineWidth, bin, mapped, phi; 
 
   for (let i = 0; i < numCircles * numSlices; i++) {
     bin = random.rangeFloor(4, 128);
@@ -31,6 +34,11 @@ const sketch = () => {
     rotationOffsets.push(random.range(Math.PI * -0.25, Math.PI * 0.25) - Math.PI * 0.9)
   }
 
+  for (let i = 0; i < numCircles; i++) {
+    const t = i / (numCircles - 1);
+    lineWidth = eases.quadIn(t) * 50 + 10;
+    lineWidths.push(lineWidth);
+  }
 
   
   return ({ context, width, height }) => {
@@ -47,18 +55,22 @@ const sketch = () => {
     context.lineCap = 'round';
     context.strokeStyle = 'black'; 
 
+    let cradius = radius;
 
     let myGradient = context.createRadialGradient(0, 0, 0, 0, 0, 360);
         myGradient.addColorStop(0.2, "white");
-        myGradient.addColorStop(0.6, "orange");
-        myGradient.addColorStop(1, "red");
+        myGradient.addColorStop(0.6, "#DAFDBA");
+        myGradient.addColorStop(1, "#45C4B0");
     
     for (let i = 0; i < numCircles; i++) {
       context.save();
-      context.rotate(rotationOffsets[i]);
+      //context.rotate(rotationOffsets[i]);
+
+      cradius += lineWidths[i] * 0.5 + 2;
 
       for (let j = 0; j < numSlices; j++) {
-        context.rotate(slice * mapped);
+        context.rotate(slice);
+        context.lineWidth = lineWidths[i];
 
         bin = bins[i * numSlices + j];
 
@@ -66,44 +78,15 @@ const sketch = () => {
 
         phi = slice * mapped;
         
-        
         context.strokeStyle = myGradient;
         context.beginPath();
-        context.moveTo(250, 0);
-        context.lineTo(0, 2500 * mapped);
-        context.closePath();
+        context.arc(0, 0, cradius, 0, phi);
         context.stroke();
       }
-      context.restore();
-    }
-
-    //second
-
-    for (let i = 0; i < numCircles; i++) {
-      context.save();
-      context.rotate(rotationOffsets[i]);
-
-      for (let j = 0; j < numSlices; j++) {
-        context.rotate(slice * mapped);
-
-        bin = bins[i * numSlices + j];
-
-        mapped = math.mapRange(audioData[bin], minDb, maxDb, 0, 1, true);
-
-        phi = slice * mapped;
-        
-        
-        context.strokeStyle = myGradient;
-        context.beginPath();
-        context.moveTo(-250, 0);
-        context.lineTo(0, -2500 * mapped);
-        context.closePath();
-        context.stroke();
-      }
+      cradius += lineWidths[i] * 0.5;
 
       context.restore();
     }
-
     context.restore();
   };
 };
@@ -125,7 +108,9 @@ const addListeners = () => {
 
 const createAudio = () => {
   audio = document.createElement('audio');
-  audio.src = 'audio/Forty.mp3';
+  //audio.src = 'audio/Senki.mp3';
+  audio.src = 'audio/Sams.mp3';
+  //audio.src = 'audio/Bimbongo.mp3';
 
   audioContext = new AudioContext();
 
@@ -134,7 +119,7 @@ const createAudio = () => {
 
   analyserNode = audioContext.createAnalyser();
   analyserNode.fftSize = 2048;
-  analyserNodesmoothingTimeConstant = 0.5 ;
+  analyserNodesmoothingTimeConstant = 0.9;
   sourceNode.connect(analyserNode);
 
   minDb = analyserNode.minDecibels;
@@ -142,9 +127,18 @@ const createAudio = () => {
 
   audioData = new Float32Array(analyserNode.frequencyBinCount);
 
+  // console.log(audioData.length);
 };
 
+const getAverage = (data) => {
+  let sum = 0;
 
+  for (let i = 0; i < data.length; i++) {
+    sum += data[i];
+  }
+
+  return sum / data.length;
+};
 
 const start = async () => {
   addListeners();
